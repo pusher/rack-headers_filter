@@ -47,6 +47,14 @@ Or in `config/environments/production.rb`:
 config.middleware.insert_before(0, Rack::HeadersFilter)
 ```
 
+By default it is configured with the Heroku router headers. It's also possible
+to specify them manually:
+
+```ruby
+require 'rack/headers_filter'
+use Rack::HeadersFilter, trusted_headers: %[HTTP_HOST]
+```
+
 ## Development
 
 After checking out the repo, run `script/setup` to install dependencies. Then,
