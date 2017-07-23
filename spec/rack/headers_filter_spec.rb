@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'rack/test'
 
 class EnvRecordingApp
   attr_reader :last_env
@@ -9,26 +10,24 @@ class EnvRecordingApp
 end
 
 describe Rack::HeadersFilter do
-  let(:app) { EnvRecordingApp.new }
-  subject { Rack::HeadersFilter.new(app) }
-  it 'filters out bad headers' do
-    subject.call(
-      'HTTP_HOST' => 'myhost.com',
-      'HTTP_X_FORWARDED_HOST' => 'fake.com',
-    )
+  include Rack::Test::Methods
 
-    expect(app.last_env).to eq(
-      'HTTP_HOST' => 'myhost.com',
-    )
+  let(:recording_app) { EnvRecordingApp.new }
+  let(:app) { Rack::HeadersFilter.new(recording_app) }
+
+  it 'filters out bad headers' do
+    header 'Host', 'myhost.com'
+    header 'X-Forwarded-Host', 'fake.com'
+    get '/'
+
+    expect(recording_app.last_env['HTTP_HOST']).to eq('myhost.com')
+    expect(recording_app.last_env['HTTP_X_FORWARDED_HOST']).to be_nil
   end
 
   it 'lets other headers through' do
-    subject.call(
-      'HTTP_FUNIONS' => 'yum'
-    )
+    header 'X-Funions', 'yum'
+    get '/'
 
-    expect(app.last_env).to eq(
-      'HTTP_FUNIONS' => 'yum',
-    )
+    expect(recording_app.last_env['HTTP_X_FUNIONS']).to eq('yum')
   end
 end
