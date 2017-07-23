@@ -31,7 +31,7 @@ module Rack
     end
 
     def call(env)
-      @remove_headers.each(&env.method(:delete))
+      @remove_headers.each { |header| env.delete(header) }
       @app.call(env)
     end
   end
