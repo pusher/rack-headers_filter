@@ -19,7 +19,6 @@ module Rack
       HTTP_VIA
       HTTP_X_FORWARDED_FOR
       HTTP_X_FORWARDED_PROTO
-      HTTP_X_FORWARDED_PROTO
       HTTP_X_REQUEST_ID
       HTTP_X_REQUEST_START
     ]
@@ -32,7 +31,7 @@ module Rack
     end
 
     def call(env)
-      @remove_headers.each(&env.method(:delete))
+      @remove_headers.each { |header| env.delete(header) }
       @app.call(env)
     end
   end
