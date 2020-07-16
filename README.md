@@ -52,7 +52,7 @@ to specify them manually:
 
 ```ruby
 require 'rack/headers_filter'
-use Rack::HeadersFilter, trusted_headers: %[HTTP_HOST]
+use Rack::HeadersFilter, trusted_headers: %w[HTTP_HOST]
 ```
 
 ## Development
